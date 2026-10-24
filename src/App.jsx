@@ -1,5 +1,6 @@
 import { useState, useRef, useEffect } from 'react'
 import * as A from './api'
+import { sound } from './sound'
 
 const L = {
   'hi-IN': 'Hindi', 'te-IN': 'Telugu', 'mr-IN': 'Marathi', 'gu-IN': 'Gujarati', 'pa-IN': 'Punjabi',
@@ -32,6 +33,10 @@ function Round({ p, prev, onNext }) {
     A.twister(lang, p.lv).then(d => { setTw(d); setPh('ready') }).catch(e => setErr(e.message))
   }, [])
 
+  useEffect(() => {
+    if (ph === 'count') sound.count(n)
+  }, [ph, n])
+
   async function listen() {
     setBz(true); setErr('')
     try {
@@ -62,6 +67,8 @@ function Round({ p, prev, onNext }) {
         const d = await A.score(blob, tw.t, lang)
         const pts = d.acc < 0.5 ? 0 : Math.round(1000 * d.acc * d.acc * (1 - secs / T / 2))
         setRes({ ...d, pts, secs, url: URL.createObjectURL(blob) })
+        if (d.acc >= 0.8) sound.success()
+        else if (d.acc < 0.5) sound.fail()
         setPh('res')
       } catch (e) { setErr(e.message); setPh('ready') }
     }
@@ -129,6 +136,7 @@ function Round({ p, prev, onNext }) {
 }
 
 function PassScreen({ p, round, totalRounds, onReady, onHome }) {
+  useEffect(() => { sound.pass() }, [])
   return (
     <div className={'scr ' + CO[p.index % 4]}>
       <div className="pass-icon">{SH[p.index % 4]}</div>
@@ -180,8 +188,17 @@ export default function App() {
   const [ps, setPs] = useState([])
   const [k, setK] = useState(0)
   const [last, setLast] = useState('')
+  const [soundOn, setSoundOn] = useState(true)
+
+  function toggleSound() {
+    const next = !soundOn
+    setSoundOn(next)
+    sound.setEnabled(next)
+    if (next) sound.click()
+  }
 
   function start() {
+    sound.start()
     setPs(nm.slice(0, np).map((name, index) => ({ name: name.trim() || `Player ${index + 1}`, sc: 0, lv: 1, index })))
     setK(0); setLast(''); setV('pass')
   }
@@ -195,6 +212,7 @@ export default function App() {
     setNp(x => x - 1)
   }
   function beginTurn() {
+    sound.click()
     setV('play')
   }
   function next(r) {
@@ -204,7 +222,10 @@ export default function App() {
       lv: Math.max(1, Math.min(5, p.lv + (r.acc >= 0.8 ? 1 : r.acc < 0.4 ? -1 : 0))),
     }))
     setLast(r.lang)
-    if (k + 1 >= np * rounds) setV('end'); else {
+    if (k + 1 >= np * rounds) {
+      sound.finale()
+      setV('end')
+    } else {
       setK(k + 1)
       setV('pass')
     }
@@ -233,6 +254,9 @@ export default function App() {
   return (
     <div className="scr pu">
       <h1 className="logo">Pronunciation<br />Roulette</h1>
+      <button className="sound-toggle" onClick={toggleSound} aria-label={soundOn ? 'Mute sounds' : 'Enable sounds'}>
+        {soundOn ? '🔊 Sound on' : '🔇 Sound off'}
+      </button>
       <div className="card lobby">
         <p className="eyebrow">Local multiplayer</p>
         <p className="sub dark">Take turns on one laptop. Add everyone before starting.</p>
