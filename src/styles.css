@@ -1,0 +1,53 @@
+:root { --r:#e21b3c; --b:#1368ce; --y:#d89e00; --g:#26890c; --pu:#46178f; }
+* { box-sizing: border-box; }
+body { margin: 0; font-family: 'Montserrat', system-ui, sans-serif; font-weight: 800; color: #fff; }
+.scr { min-height: 100vh; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 18px; padding: 24px; text-align: center; }
+.pu { background: var(--pu); } .r { background: var(--r); } .b { background: var(--b); } .y { background: var(--y); } .g { background: var(--g); }
+h1 { font-size: clamp(32px, 7vw, 56px); margin: 0; font-weight: 900; }
+.logo { line-height: 1.05; text-shadow: 0 5px 0 rgba(0,0,0,.25); }
+.big { font-size: 24px; margin: 0; }
+.sub { margin: 0; opacity: .85; font-weight: 600; max-width: 640px; }
+.hd { position: fixed; top: 0; left: 0; right: 0; display: flex; justify-content: space-between; padding: 14px 20px; background: rgba(0,0,0,.25); }
+.chip { padding: 10px 22px; border-radius: 6px; font-size: 20px; box-shadow: 0 4px 0 rgba(0,0,0,.25); }
+.tw { background: #fff; color: #222; padding: 28px 32px; border-radius: 8px; font-size: clamp(26px, 5vw, 44px); line-height: 1.35; max-width: 860px; box-shadow: 0 6px 0 rgba(0,0,0,.25); }
+.row { display: flex; gap: 14px; flex-wrap: wrap; justify-content: center; }
+.btn { font: inherit; color: #fff; border: 0; border-radius: 6px; padding: 16px 32px; font-size: 22px; cursor: pointer; box-shadow: 0 5px 0 rgba(0,0,0,.3); background: #333; }
+.btn:active { transform: translateY(4px); box-shadow: 0 1px 0 rgba(0,0,0,.3); }
+.btn:disabled { opacity: .55; cursor: default; }
+.btn:focus-visible, .lnk:focus-visible, .tab:focus-visible, input:focus-visible { outline: 3px solid #fff; outline-offset: 3px; }
+.lnk { font: inherit; background: none; border: 0; color: #fff; text-decoration: underline; cursor: pointer; font-size: 16px; }
+.card { background: #fff; color: #222; border-radius: 8px; padding: 18px 24px; width: min(560px, 100%); display: flex; flex-direction: column; gap: 10px; text-align: left; }
+.card p { margin: 0; } .card small { opacity: .6; font-weight: 600; }
+.card input { font: inherit; padding: 12px; border: 2px solid #ccc; border-radius: 6px; font-size: 18px; }
+.lobby { gap: 14px; }
+.eyebrow { margin: 0; text-transform: uppercase; letter-spacing: .12em; font-size: 13px; opacity: .72; }
+.dark { color: #222; opacity: .65; }
+.player-count { font-size: 20px; min-width: 130px; text-align: center; }
+.name-field { display: flex; align-items: center; gap: 10px; }
+.name-field input { flex: 1; min-width: 0; }
+.shape, .pass-icon { display: grid; place-items: center; font-weight: 900; }
+.shape { width: 38px; height: 38px; border-radius: 7px; color: #fff; font-size: 20px; flex: 0 0 38px; }
+.pass-icon { width: 92px; height: 92px; border-radius: 18px; background: rgba(255,255,255,.2); font-size: 52px; box-shadow: 0 7px 0 rgba(0,0,0,.2); }
+.scr > .pass-icon + .eyebrow { margin-top: 2px; }
+.pass-icon ~ .btn { background: #fff; color: #222; }
+.pass-icon ~ .btn:hover { transform: translateY(-2px); }
+.lobby .tab { flex: 0 0 48px; padding: 8px; font-size: 26px; line-height: 1; }
+.tab { flex: 1; font: inherit; padding: 12px; border: 2px solid var(--pu); background: #fff; color: var(--pu); border-radius: 6px; cursor: pointer; font-size: 16px; }
+.tab.on { background: var(--pu); color: #fff; }
+.cnt { font-size: 220px; font-weight: 900; animation: pop .9s ease-out; }
+@keyframes pop { from { transform: scale(2); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+.bar { width: min(600px, 90%); height: 16px; background: rgba(255,255,255,.25); border-radius: 8px; overflow: hidden; }
+.bar i { display: block; height: 100%; background: #fff; animation: shrink linear forwards; }
+@keyframes shrink { from { width: 100%; } to { width: 0; } }
+.pts { font-size: 72px; font-weight: 900; }
+.err { background: #fff; color: var(--r); padding: 10px 16px; border-radius: 6px; margin: 0; }
+.spin { width: 56px; height: 56px; border: 6px solid rgba(255,255,255,.3); border-top-color: #fff; border-radius: 50%; animation: sp 1s linear infinite; }
+@keyframes sp { to { transform: rotate(360deg); } }
+.pod { display: flex; align-items: flex-end; gap: 10px; min-height: 140px; }
+.pl { width: 150px; padding: 10px; border-radius: 6px 6px 0 0; display: flex; flex-direction: column; justify-content: space-between; }
+@media (prefers-reduced-motion: reduce) { .cnt, .spin { animation: none; } }
+@media (max-width: 520px) {
+  .scr { padding: 18px; }
+  .card { padding: 16px; }
+  .hd { padding: 12px; font-size: 14px; }
+}
