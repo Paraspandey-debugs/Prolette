@@ -10,7 +10,9 @@ const TIER = [['hi-IN', 'te-IN'], ['mr-IN', 'gu-IN', 'pa-IN'], ['ta-IN', 'kn-IN'
 const SH = ['▲', '◆', '●', '■']
 const CO = ['r', 'b', 'y', 'g']
 const T = 12 // seconds to speak
-const R = 5 // rounds per player
+const DEFAULT_ROUNDS = 5
+const MIN_ROUNDS = 1
+const MAX_ROUNDS = 10
 const MAX_PLAYERS = 8
 const sl = ms => new Promise(r => setTimeout(r, ms))
 const pick = a => a[Math.floor(Math.random() * a.length)]
@@ -126,11 +128,11 @@ function Round({ p, prev, onNext }) {
   )
 }
 
-function PassScreen({ p, round, onReady, onHome }) {
+function PassScreen({ p, round, totalRounds, onReady, onHome }) {
   return (
     <div className={'scr ' + CO[p.index % 4]}>
       <div className="pass-icon">{SH[p.index % 4]}</div>
-      <p className="eyebrow">Round {round}</p>
+      <p className="eyebrow">Round {round} of {totalRounds}</p>
       <h1>Pass the laptop to<br />{p.name}</h1>
       <p className="sub">Everyone else, look away. When {p.name} is ready, they can start their turn.</p>
       <button className="btn" onClick={onReady}>I'm {p.name} — start</button>
@@ -174,6 +176,7 @@ export default function App() {
   const [v, setV] = useState('home')
   const [np, setNp] = useState(1)
   const [nm, setNm] = useState(['Player 1', 'Player 2'])
+  const [rounds, setRounds] = useState(DEFAULT_ROUNDS)
   const [ps, setPs] = useState([])
   const [k, setK] = useState(0)
   const [last, setLast] = useState('')
@@ -201,14 +204,14 @@ export default function App() {
       lv: Math.max(1, Math.min(5, p.lv + (r.acc >= 0.8 ? 1 : r.acc < 0.4 ? -1 : 0))),
     }))
     setLast(r.lang)
-    if (k + 1 >= np * R) setV('end'); else {
+    if (k + 1 >= np * rounds) setV('end'); else {
       setK(k + 1)
       setV('pass')
     }
   }
 
   if (v === 'diag') return <Diag back={() => setV('home')} />
-  if (v === 'pass') return <PassScreen p={ps[k % np]} round={Math.floor(k / np) + 1} onReady={beginTurn} onHome={() => setV('home')} />
+  if (v === 'pass') return <PassScreen p={ps[k % np]} round={Math.floor(k / np) + 1} totalRounds={rounds} onReady={beginTurn} onHome={() => setV('home')} />
   if (v === 'play') return <Round key={k} p={ps[k % np]} prev={last} onNext={next} />
   if (v === 'end') {
     const s = [...ps].sort((a, b) => b.sc - a.sc)
@@ -244,6 +247,11 @@ export default function App() {
             <input aria-label={`Player ${i + 1} name`} value={x} maxLength={14} onChange={e => setNm(a => a.map((y, j) => j === i ? e.target.value : y))} />
           </label>
         ))}
+        <div className="row">
+          <button className="tab" onClick={() => setRounds(x => Math.max(MIN_ROUNDS, x - 1))} disabled={rounds <= MIN_ROUNDS}>−</button>
+          <strong className="player-count">{rounds} {rounds === 1 ? 'round' : 'rounds'} each</strong>
+          <button className="tab" onClick={() => setRounds(x => Math.min(MAX_ROUNDS, x + 1))} disabled={rounds >= MAX_ROUNDS}>+</button>
+        </div>
       </div>
       <button className="btn g" onClick={start}>Play</button>
       <button className="lnk" onClick={() => setV('diag')}>Test Sarvam</button>
